@@ -100,7 +100,7 @@ form_principal_name (
   )
 {
     const char *forced_instance = 0;
-	int plen;
+	int plen, n;
 
     plen = strlcpy(pname, user, pnamelen);
     user = pname;
@@ -133,13 +133,14 @@ form_principal_name (
     }
 
     /* form user[/instance][@realm] */
-    plen += snprintf(pname+plen, pnamelen-plen, "%s%s%s%s",
+    n = snprintf(pname+plen, pnamelen-plen, "%s%s%s%s",
 	(forced_instance ? "/" : ""),
 	(forced_instance ? forced_instance : ""),
 	((realm && realm[0]) ? "@" : ""),
 	((realm && realm[0]) ? realm : "")
 	);
-    if ((plen <= 0) || (plen >= pnamelen))
+    plen += n;
+    if ((n<0) || (plen == 0) || (plen >= pnamelen))
 	return -1;
 
     /* Perhaps we should uppercase the realm? */
